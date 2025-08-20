@@ -1,0 +1,10 @@
+{
+  "default_model_key": "local",
+  "models": {
+    "local": {
+      "provider": "ollama",
+      "model": "llama3.1:8b-instruct",
+      "base_url": "http://127.0.0.1:11434"
+    }
+  }
+}

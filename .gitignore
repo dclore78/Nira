@@ -1,0 +1,12 @@
+*.pyc
+__pycache__/
+.venv/
+dist/
+build/
+*.log
+electron/renderer/
+backend/ui_out/
+ui/node_modules/
+electron/node_modules/
+backend/dist/
+*.exe

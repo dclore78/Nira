@@ -1,0 +1,57 @@
+{
+  "name": "nira-electron",
+  "version": "1.0.0",
+  "description": "NIRA Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "prebuild": "node scripts/generate-icons.mjs && node scripts/fetch-ollama.mjs",
+    "build:win": "npm run prebuild && electron-builder --win",
+    "dev": "electron ."
+  },
+  "build": {
+    "appId": "com.nira.app",
+    "productName": "NIRA",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "icons/**/*",
+      "bin/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend/dist/nyra-backend.exe",
+        "to": "nyra-backend.exe"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "icons/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "NIRA",
+      "installerIcon": "icons/icon.ico",
+      "uninstallerIcon": "icons/icon.ico",
+      "installerHeaderIcon": "icons/icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}

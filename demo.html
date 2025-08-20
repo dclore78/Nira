@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIRA Demo - AI Desktop App Preview</title>
+    <style>
+        /* CSS Variables for Theme */
+        :root {
+            --primary-bg: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            --secondary-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --accent-cyan: #00d4ff;
+            --accent-blue: #0099cc;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .model-card {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .model-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .model-size {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .model-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Main Chat Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .chat-header h2 {
+            color: var(--accent-cyan);
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .welcome-message {
+            text-align: center;
+            max-width: 400px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .welcome-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .message {
+            display: flex;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .input-field {
+            flex: 1;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            padding: 0;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Avatar Panel */
+        .avatar-panel {
+            flex: 1;
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .avatar-container {
+            position: relative;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #2a2a40, #1a1a30);
+            border-radius: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .avatar-status {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Journal Panel */
+        .journal-panel {
+            flex: 1;
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .journal-header h3 {
+            color: var(--accent-cyan);
+        }
+
+        .journal-entry {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .journal-entry:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .entry-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .entry-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Demo indicator */
+        .demo-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--warning);
+            color: black;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-badge">
+        🚀 NIRA DEMO
+    </div>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🧠</div>
+                <div class="logo-text">
+                    <h1>NIRA</h1>
+                    <p>Neural Interactive Assistant</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">AI Models</div>
+                
+                <div class="model-card">
+                    <div class="model-header">
+                        <div>
+                            <div class="model-name">Llama 2</div>
+                            <div class="model-size">3.8GB</div>
+                        </div>
+                        <div class="model-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-card">
+                    <div class="model-header">
+                        <div>
+                            <div class="model-name">Mistral</div>
+                            <div class="model-size">4.1GB</div>
+                        </div>
+                        <div class="model-status">
+                            <span style="color: var(--text-muted);">Available</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-card">
+                    <div class="model-header">
+                        <div>
+                            <div class="model-name">CodeLlama</div>
+                            <div class="model-size">3.8GB</div>
+                        </div>
+                        <div class="model-status">
+                            <span style="color: var(--text-muted);">Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-secondary">🗑️ Clear Chat</button>
+                <button class="btn btn-secondary">⚙️ Settings</button>
+            </div>
+
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);">
+                    <div class="status-indicator"></div>
+                    <span>Connected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="chat-header">
+                <h2>Chat with NIRA</h2>
+                <p>Your AI assistant is ready to help</p>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🤖</div>
+                    <h3 style="color: var(--accent-cyan); margin-bottom: 10px;">Welcome to NIRA!</h3>
+                    <p style="color: var(--text-muted);">
+                        I'm your Neural Interactive Response Assistant. Ask me anything or start a conversation!
+                    </p>
+                </div>
+            </div>
+
+            <div class="chat-input">
+                <div class="input-container">
+                    <input type="text" class="input-field" placeholder="Type your message here..." id="messageInput">
+                    <button class="btn send-btn" onclick="sendMessage()">📤</button>
+                </div>
+                <div style="text-align: center; margin-top: 8px; font-size: 11px; color: var(--text-muted);">
+                    Press Enter to send • This is a UI demo
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <!-- Avatar Panel -->
+            <div class="avatar-panel">
+                <div class="section-title">Avatar</div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Visual AI Assistant</p>
+
+                <div class="avatar-container">
+                    <img src="backend/assets/avatar.jpg" alt="NIRA Avatar" class="avatar-image" 
+                         onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\"font-size: 40px; opacity: 0.3;\">👤</div>'">
+                </div>
+
+                <div class="avatar-status">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <div class="status-indicator"></div>
+                        <span style="font-weight: 600;">Listening</span>
+                    </div>
+                    <p style="font-size: 11px; color: var(--text-muted);">
+                        Ready to respond to your messages
+                    </p>
+                </div>
+
+                <div style="background: var(--secondary-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--accent-cyan); margin-bottom: 8px;">Avatar Features</div>
+                    <ul style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                        <li>• Lip-sync animation</li>
+                        <li>• Emotion detection</li>
+                        <li>• Real-time speech</li>
+                        <li>• Visual feedback</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Journal Panel -->
+            <div class="journal-panel">
+                <div class="journal-header">
+                    <div>
+                        <h3>Journal</h3>
+                        <p style="font-size: 12px; color: var(--text-muted);">Your thoughts & notes</p>
+                    </div>
+                    <button style="background: none; border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; width: 30px; height: 30px; cursor: pointer;">+</button>
+                </div>
+
+                <div class="journal-entry">
+                    <div class="entry-title">Meeting Notes</div>
+                    <div class="entry-date">Dec 20, 2:30 PM</div>
+                </div>
+
+                <div class="journal-entry">
+                    <div class="entry-title">Project Ideas</div>
+                    <div class="entry-date">Dec 19, 11:45 AM</div>
+                </div>
+
+                <div class="journal-entry">
+                    <div class="entry-title">Daily Thoughts</div>
+                    <div class="entry-date">Dec 18, 6:15 PM</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let messageCount = 0;
+        
+        const mockResponses = [
+            "Hello! I'm NIRA, your AI assistant. How can I help you today?",
+            "That's an interesting question. Let me think about that...",
+            "I understand what you're asking. Here's my perspective on that topic.",
+            "Great point! I'd be happy to help you with that.",
+            "Thanks for sharing that with me. Here's what I think...",
+            "I can see why you'd want to know more about that. Let me explain...",
+            "That's a fascinating topic! I'd love to discuss it further.",
+            "You raise an excellent question. In my experience..."
+        ];
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Clear welcome message if it exists
+            if (messageCount === 0) {
+                chatMessages.innerHTML = '';
+            }
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `
+                <div class="message-content">${message}</div>
+            `;
+            chatMessages.appendChild(userMessage);
+            
+            // Clear input
+            input.value = '';
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Add AI response after delay
+            setTimeout(() => {
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message assistant';
+                const response = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+                aiMessage.innerHTML = `
+                    <div class="message-content">${response}</div>
+                `;
+                chatMessages.appendChild(aiMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+            
+            messageCount++;
+        }
+
+        // Handle Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Add some demo startup messages
+        setTimeout(() => {
+            document.getElementById('messageInput').placeholder = "Try asking me something...";
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -13,17 +13,86 @@ Prereqs (Windows)
 - Python 3.11+
 - PowerShell
 
-Build steps (first time)
-1. Backend EXE
-   - Open PowerShell at backend/ and run: `./build_backend.bat`
-2. UI build
-   - Open PowerShell at ui/ and run: `npm i && npm run build`
-3. Electron installer
-   - Open PowerShell at electron/ and run: `npm i && npm run build:win`
+## Quick Build (Automated)
 
-The installer will be at electron/dist/NIRA-Setup-1.0.0.exe (version may differ).
+**Windows:**
+```bat
+build.bat
+```
 
-Runtime
-- App starts backend and headless Ollama automatically.
-- Pick a model from the dropdown; if not installed, it will download with progress.
-- Your default avatar lives at backend/assets/avatar.jpg.
+**Linux/MacOS:**
+```bash
+./build.sh
+```
+
+The installer will be at `electron/dist/NIRA-Setup-1.0.0.exe`
+
+## Manual Build Steps
+
+1. **Backend EXE**
+   ```bat
+   cd backend
+   build_backend.bat
+   ```
+
+2. **UI build**
+   ```bash
+   cd ui
+   npm i && npm run build
+   ```
+
+3. **Electron installer**
+   ```bash
+   cd electron
+   npm i && npm run build:win
+   ```
+
+## Development Mode
+
+For testing and development:
+```bash
+./dev.sh
+```
+
+This starts mock backend + UI dev server.
+
+## Manual Development Setup
+
+1. **Start Mock Backend:**
+   ```bash
+   python3 /tmp/mock_backend.py
+   ```
+
+2. **Start UI Dev:**
+   ```bash
+   cd ui && npm run dev
+   ```
+
+3. **Start Electron (optional):**
+   ```bash
+   cd electron && npm run dev
+   ```
+
+## Runtime
+- App starts backend and headless Ollama automatically
+- Pick a model from the dropdown; if not installed, it will download with progress
+- Default avatar: `backend/assets/avatar.jpg`
+- Models stored in `%LOCALAPPDATA%\NIRA\ollama\models`
+
+## Project Structure
+```
+backend/          FastAPI server, Ollama manager, TTS/STT
+ui/              React + Vite + TypeScript frontend  
+electron/        Electron wrapper + installer config
+build.sh/.bat    Automated build scripts
+dev.sh           Development mode script
+```
+
+## Key Features
+- ✅ Single window Electron app (no tray icons)
+- ✅ Headless backend and Ollama processes
+- ✅ In-app model selector with download progress
+- ✅ Voice pipeline: mic → STT → LLM → TTS
+- ✅ Modern cyan/blue theme with custom fonts
+- ✅ Offline operation (fonts bundled locally)
+- ✅ NSIS installer with standard Windows wizard

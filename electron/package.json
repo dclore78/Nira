@@ -4,7 +4,7 @@
   "description": "NIRA Desktop App",
   "main": "main.js",
   "scripts": {
-    "prebuild": "node scripts/generate-icons.mjs && node scripts/fetch-ollama.mjs",
+    "prebuild": "node scripts/generate-icons.mjs && node scripts/fetch-ollama.mjs && node scripts/copy-ui.mjs",
     "build:win": "npm run prebuild && electron-builder --win",
     "dev": "electron ."
   },

@@ -1,0 +1,12 @@
+
+/* NIRA Font Stack - System Fallbacks */
+:root {
+  --font-heading: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+}
+
+/* Brand font fallbacks */
+.font-oxanium { font-family: var(--font-heading); }
+.font-space-grotesk { font-family: var(--font-body); }
+.font-space-mono { font-family: var(--font-mono); }

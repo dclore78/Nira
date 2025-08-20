@@ -101,15 +101,28 @@ async function generateFontCSS() {
 async function main() {
   try {
     await fs.mkdir(FONTS_DIR, { recursive: true })
-    console.log('Fetching fonts...')
+    console.log('Setting up fonts...')
     
-    for (const font of FONTS) {
-      for (const weight of font.weights) {
-        await downloadFont(font.url, font.name, weight)
-      }
-    }
+    // Skip external font fetching and create fallback CSS
+    console.log('Using system font fallbacks (external fonts blocked)')
     
-    await generateFontCSS()
+    // Generate CSS with system font fallbacks
+    const fallbackCSS = `
+/* NIRA Font Stack - System Fallbacks */
+:root {
+  --font-heading: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+}
+
+/* Brand font fallbacks */
+.font-oxanium { font-family: var(--font-heading); }
+.font-space-grotesk { font-family: var(--font-body); }
+.font-space-mono { font-family: var(--font-mono); }
+`
+    
+    await fs.writeFile(join(__dirname, '../public/fonts.css'), fallbackCSS)
+    console.log('Generated fallback fonts.css')
     console.log('Font setup complete!')
   } catch (error) {
     console.error('Font setup failed:', error)

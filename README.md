@@ -8,10 +8,32 @@ What you get
 - Cyan/blue brand + wordmark + splash
 - NSIS installer (Next → Next → Install)
 
-Prereqs (Windows)
-- Node 18+
-- Python 3.11+
-- PowerShell
+## Prerequisites
+- **Node.js 18+** (download from [nodejs.org](https://nodejs.org))
+- **Python 3.11+** (download from [python.org](https://python.org))
+- **PowerShell** (included with Windows)
+
+## First Time Setup
+
+Before building, you need to install dependencies:
+
+1. **Install UI dependencies:**
+   ```bash
+   cd ui
+   npm install
+   ```
+
+2. **Install Electron dependencies:**
+   ```bash
+   cd electron
+   npm install
+   ```
+
+3. **Install Python backend dependencies:**
+   ```bash
+   cd backend
+   python -m pip install -r requirements.txt
+   ```
 
 ## Quick Build (Automated)
 

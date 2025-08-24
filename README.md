@@ -1,2 +1,0 @@
-# Nira
-Ai App
